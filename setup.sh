@@ -8,11 +8,9 @@
 #   source venv/bin/activate
 #   python train.py
 
-set -e  # Exit immediately on any error
+set -e
 
 VENV_DIR="venv"
-TORCH_VERSION="2.5.1"
-TORCHVISION_VERSION="0.20.1"
 PYTORCH_INDEX="https://download.pytorch.org/whl/cpu"
 PYTHON_MIN_MAJOR=3
 PYTHON_MIN_MINOR=10
@@ -47,17 +45,14 @@ fi
 source "${VENV_DIR}/bin/activate"
 echo "✓ Virtual environment activated."
 
-# Upgrade pip
+# Upgrade pip via python -m pip to avoid permission issues
 echo "Upgrading pip..."
-pip install --quiet --upgrade pip
+python -m pip install --quiet --upgrade pip
+echo "✓ pip upgraded."
 
-# Install PyTorch from the official index (CPU build)
-# The PyPI version may be outdated or missing platform wheels
-echo "Installing PyTorch ${TORCH_VERSION} and torchvision ${TORCHVISION_VERSION} (CPU)..."
-pip install --quiet \
-    "torch==${TORCH_VERSION}" \
-    "torchvision==${TORCHVISION_VERSION}" \
-    --index-url "$PYTORCH_INDEX"
+# Install PyTorch from the official index (CPU build, latest compatible version)
+echo "Installing PyTorch and torchvision (CPU)..."
+pip install --quiet torch torchvision --index-url "$PYTORCH_INDEX"
 echo "✓ PyTorch installed."
 
 # Install remaining dependencies

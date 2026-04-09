@@ -11,24 +11,23 @@ REM   python train.py
 setlocal enabledelayedexpansion
 
 set VENV_DIR=venv
-set TORCH_VERSION=2.5.1
-set TORCHVISION_VERSION=0.20.1
 set PYTORCH_INDEX=https://download.pytorch.org/whl/cpu
 
 echo TinyML Workshop -- Environment Setup
 echo ------------------------------------
 
-REM Check Python is available
-python --version >nul 2>&1
+REM Use the Python Launcher (py) which respects installed versions on Windows.
+REM This avoids picking up an old Python from PATH.
+py --version >nul 2>&1
 if errorlevel 1 (
-    echo ERROR: Python was not found.
+    echo ERROR: The Python Launcher was not found.
     echo        Download Python from https://www.python.org/downloads/
     echo        Make sure to check "Add Python to PATH" during installation.
     exit /b 1
 )
 
 REM Check Python version is 3.10+
-for /f "tokens=2 delims= " %%v in ('python --version 2^>^&1') do set PYTHON_VERSION=%%v
+for /f "tokens=2 delims= " %%v in ('py -3 --version 2^>^&1') do set PYTHON_VERSION=%%v
 for /f "tokens=1,2 delims=." %%a in ("%PYTHON_VERSION%") do (
     set PYTHON_MAJOR=%%a
     set PYTHON_MINOR=%%b
@@ -48,7 +47,7 @@ if exist "%VENV_DIR%\" (
     echo [OK] Virtual environment '%VENV_DIR%' already exists, skipping creation.
 ) else (
     echo Creating virtual environment '%VENV_DIR%'...
-    python -m venv %VENV_DIR%
+    py -3 -m venv %VENV_DIR%
     if errorlevel 1 (
         echo ERROR: Failed to create virtual environment.
         exit /b 1
@@ -60,16 +59,14 @@ REM Activate the virtual environment
 call "%VENV_DIR%\Scripts\activate.bat"
 echo [OK] Virtual environment activated.
 
-REM Upgrade pip
+REM Upgrade pip via python -m pip to avoid permission issues
 echo Upgrading pip...
-pip install --quiet --upgrade pip
+python.exe -m pip install --quiet --upgrade pip
+echo [OK] pip upgraded.
 
-REM Install PyTorch from the official index (CPU build)
-echo Installing PyTorch %TORCH_VERSION% and torchvision %TORCHVISION_VERSION% (CPU^)...
-pip install --quiet ^
-    "torch==%TORCH_VERSION%" ^
-    "torchvision==%TORCHVISION_VERSION%" ^
-    --index-url %PYTORCH_INDEX%
+REM Install PyTorch from the official index (CPU build, latest compatible version)
+echo Installing PyTorch and torchvision (CPU)...
+pip install --quiet torch torchvision --index-url %PYTORCH_INDEX%
 if errorlevel 1 (
     echo ERROR: Failed to install PyTorch.
     exit /b 1
