@@ -1,0 +1,4 @@
+# torch and torchvision are installed by the setup scripts directly from the
+# PyTorch index to ensure the correct build for your Python version and OS.
+onnx
+onnxscript
