@@ -26,6 +26,7 @@ warnings.filterwarnings("ignore", category=DeprecationWarning)
 warnings.filterwarnings("ignore", category=UserWarning)
 
 from model import CNN, QuantizedCNN
+from utils.quantization import setup_quantization_engine
 
 
 # ---------------------------------------------------------------------------
@@ -36,7 +37,8 @@ SAVE_PATH = Path("./models/cnn_ptq.pth")
 DATA_DIR  = Path("./data")
 CALIBRATION_BATCHES = 10  # How many batches to use for calibration
 
-
+# Detect and setup the best engine for this machine
+Q_ENGINE = setup_quantization_engine()
 
 
 def get_calibration_loader():
@@ -74,8 +76,8 @@ def main():
     quant_model = QuantizedCNN(baseline)
     quant_model.eval()
 
-    # Set quantization config — 'fbgemm' is optimized for x86 CPUs
-    quant_model.qconfig = torch.quantization.get_default_qconfig("fbgemm")
+    # Set quantization config using the dynamically selected engine
+    quant_model.qconfig = torch.quantization.get_default_qconfig(Q_ENGINE)
 
     # Fuse Conv+ReLU into a single op before quantizing (improves accuracy and speed)
     # We fuse inside the inner model, targeting the conv and relu sequence
@@ -85,7 +87,7 @@ def main():
     torch.quantization.prepare(quant_model, inplace=True)
 
     # Calibrate: run batches through the model so observers collect range data
-    print(f"Calibrating on {CALIBRATION_BATCHES} batches...")
+    print(f"Calibrating with engine '{Q_ENGINE}' on {CALIBRATION_BATCHES} batches...")
     loader = get_calibration_loader()
     with torch.no_grad():
         for i, (images, _) in enumerate(loader):

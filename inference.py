@@ -24,6 +24,7 @@ warnings.filterwarnings("ignore", category=DeprecationWarning)
 warnings.filterwarnings("ignore", category=UserWarning)
 
 from model import CNN, QuantizedCNN, PrunedCNN
+from utils.quantization import setup_quantization_engine
 
 
 # ---------------------------------------------------------------------------
@@ -33,7 +34,8 @@ DATA_DIR  = Path("./data")
 N_SAMPLES = 1000
 N_FILTERS_KEPT = 16   # Must match the value used in structured_pruning.py
 
-
+# Detect and setup the best engine for this machine
+Q_ENGINE = setup_quantization_engine()
 
 
 def get_test_loader(n_samples):
@@ -81,7 +83,7 @@ def load_quantized(path, device):
     """
     baseline = CNN()
     wrapper = QuantizedCNN(baseline)
-    wrapper.qconfig = torch.quantization.get_default_qconfig("fbgemm")
+    wrapper.qconfig = torch.quantization.get_default_qconfig(Q_ENGINE)
     torch.quantization.fuse_modules(wrapper.model, [["conv", "relu"]], inplace=True)
     torch.quantization.prepare(wrapper, inplace=True)
     torch.quantization.convert(wrapper, inplace=True)
@@ -111,7 +113,8 @@ def main():
         ("Structured pruned (float32)", Path("./models/cnn_structured_pruned.pth"),   "structured"),
     ]
 
-    print(f"\nRunning inference on {N_SAMPLES} MNIST test samples (CPU)\n")
+    print(f"\nRunning inference on {N_SAMPLES} MNIST test samples (CPU)")
+    print(f"Quantization engine: {Q_ENGINE}\n")
     print(f"{'Model':<30} {'Accuracy':>10} {'Time (ms)':>12} {'Size (KB)':>12}")
     print("-" * 67)
 

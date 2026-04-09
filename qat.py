@@ -29,6 +29,7 @@ warnings.filterwarnings("ignore", category=DeprecationWarning)
 warnings.filterwarnings("ignore", category=UserWarning)
 
 from model import CNN, QuantizedCNN
+from utils.quantization import setup_quantization_engine
 
 
 # ---------------------------------------------------------------------------
@@ -40,7 +41,8 @@ DATA_DIR  = Path("./data")
 FINETUNE_EPOCHS = 3  # Fine-tuning epochs — fewer needed since we start from a trained model
 LEARNING_RATE = 1e-4
 
-
+# Detect and setup the best engine for this machine
+Q_ENGINE = setup_quantization_engine()
 
 
 def get_dataloaders():
@@ -79,7 +81,8 @@ def main():
 
     # Wrap and configure
     qat_model = QuantizedCNN(baseline)
-    qat_model.qconfig = torch.quantization.get_default_qat_qconfig("fbgemm")
+    # Gebruik de dynamisch geselecteerde engine voor QAT config
+    qat_model.qconfig = torch.quantization.get_default_qat_qconfig(Q_ENGINE)
 
     # Fuse Conv+ReLU
     torch.quantization.fuse_modules(qat_model.model, [["conv", "relu"]], inplace=True)
