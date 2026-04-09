@@ -39,7 +39,7 @@ quantization-aware training (QAT), magnitude-based pruning, and ONNX export.
 Clone the repository:
 
 ```
-git clone https://github.com/your-username/tinyml-workshop.git
+git clone https://github.com/ArtuurAstaes/tinyml-workshop.git
 cd tinyml-workshop
 ```
 
