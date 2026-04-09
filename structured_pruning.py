@@ -37,7 +37,7 @@ LOAD_PATH = Path("./models/cnn.pth")
 SAVE_PATH = Path("./models/cnn_structured_pruned.pth")
 DATA_DIR  = Path("./data")
 N_FILTERS_TO_KEEP = 16   # Keep 16 of the 32 filters (50% reduction)
-FINETUNE_EPOCHS = 5
+FINETUNE_EPOCHS = 3
 LEARNING_RATE = 1e-4
 
 
@@ -128,7 +128,7 @@ def main():
     optimizer = optim.Adam(pruned.parameters(), lr=LEARNING_RATE)
     criterion = nn.CrossEntropyLoss()
 
-    print(f"\nFine-tuning for {FINETUNE_EPOCHS} epochs...")
+    print(f"Fine-tuning for {FINETUNE_EPOCHS} epochs...")
     for epoch in range(1, FINETUNE_EPOCHS + 1):
         pruned.train()
         correct, total_loss = 0, 0.0
@@ -146,7 +146,7 @@ def main():
 
         acc = correct / len(train_loader.dataset)
         print(f"  Epoch {epoch}/{FINETUNE_EPOCHS} | "
-              f"loss: {total_loss / len(train_loader.dataset):.4f}, acc: {100 * acc:.2f}%")
+              f"  loss: {total_loss / len(train_loader.dataset):.4f}, acc: {100 * acc:.2f}%")
 
     acc_final = evaluate(pruned, test_loader, device)
     print(f"\nFinal accuracy after fine-tuning: {100 * acc_final:.2f}%")

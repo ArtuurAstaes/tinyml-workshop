@@ -114,7 +114,7 @@ def main():
     optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE)
     criterion = nn.CrossEntropyLoss()
 
-    print(f"\nFine-tuning for {FINETUNE_EPOCHS} epochs...")
+    print(f"Fine-tuning for {FINETUNE_EPOCHS} epochs...")
     for epoch in range(1, FINETUNE_EPOCHS + 1):
         model.train()
         correct, total_loss = 0, 0.0
@@ -131,7 +131,8 @@ def main():
             correct += (outputs.argmax(dim=1) == labels).sum().item()
 
         acc = correct / len(train_loader.dataset)
-        print(f"  Epoch {epoch}/{FINETUNE_EPOCHS} | loss: {total_loss / len(train_loader.dataset):.4f}, acc: {100 * acc:.2f}%")
+        print(f"  Epoch {epoch}/{FINETUNE_EPOCHS} | "
+              f"  loss: {total_loss / len(train_loader.dataset):.4f}, acc: {100 * acc:.2f}%")
 
     acc_after_finetuning = evaluate(model, test_loader, device)
     print(f"\nAfter fine-tuning:")

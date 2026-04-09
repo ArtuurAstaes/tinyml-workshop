@@ -37,7 +37,7 @@ from model import CNN, QuantizedCNN
 LOAD_PATH = Path("./models/cnn.pth")
 SAVE_PATH = Path("./models/cnn_qat.pth")
 DATA_DIR  = Path("./data")
-EPOCHS    = 3  # Fine-tuning epochs — fewer needed since we start from a trained model
+FINETUNE_EPOCHS = 3  # Fine-tuning epochs — fewer needed since we start from a trained model
 LEARNING_RATE = 1e-4
 
 
@@ -91,8 +91,8 @@ def main():
     optimizer = optim.Adam(qat_model.parameters(), lr=LEARNING_RATE)
     criterion = nn.CrossEntropyLoss()
 
-    print(f"Fine-tuning with QAT for {EPOCHS} epochs...\n")
-    for epoch in range(1, EPOCHS + 1):
+    print(f"Fine-tuning with QAT for {FINETUNE_EPOCHS} epochs...")
+    for epoch in range(1, FINETUNE_EPOCHS + 1):
         qat_model.train()
         total_loss, correct = 0.0, 0
 
@@ -107,7 +107,8 @@ def main():
             correct += (outputs.argmax(dim=1) == labels).sum().item()
 
         train_acc = correct / len(train_loader.dataset)
-        print(f"Epoch {epoch}/{EPOCHS} | Train loss: {total_loss / len(train_loader.dataset):.4f}, acc: {100 * train_acc:.2f}%")
+        print(f"  Epoch {epoch}/{FINETUNE_EPOCHS} | "
+              f"  loss: {total_loss / len(train_loader.dataset):.4f}, acc: {100 * train_acc:.2f}%")
 
     # Convert fake-quantized model to a real quantized model
     qat_model.eval()
