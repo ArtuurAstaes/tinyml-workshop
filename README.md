@@ -51,7 +51,7 @@ bash setup.sh
 
 **Windows:**
 ```
-setup.bat
+.\setup.bat
 ```
 
 > **Note for Windows users:** If you get a permission error, Windows may have
