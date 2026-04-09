@@ -36,8 +36,8 @@ def get_dataloaders():
         transforms.Normalize((0.1307,), (0.3081,))  # MNIST mean and std
     ])
 
-    train_dataset = datasets.MNIST(DATA_DIR, train=True, download=True, transform=transform)
-    test_dataset = datasets.MNIST(DATA_DIR, train=False, download=True, transform=transform)
+    train_dataset = datasets.MNIST(DATA_DIR, train=True, download=False, transform=transform)
+    test_dataset = datasets.MNIST(DATA_DIR, train=False, download=False, transform=transform)
 
     train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True)
     test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=False)

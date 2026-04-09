@@ -13,9 +13,6 @@ __pycache__/
 *.onnx
 *.tflite
 
-# MNIST dataset (downloaded automatically by the scripts)
-data/
-
 # Distribution / packaging
 dist/
 build/

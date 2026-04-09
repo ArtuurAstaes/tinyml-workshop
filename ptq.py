@@ -58,7 +58,7 @@ def get_calibration_loader():
         transforms.ToTensor(),
         transforms.Normalize((0.1307,), (0.3081,))
     ])
-    dataset = datasets.MNIST(DATA_DIR, train=False, download=True, transform=transform)
+    dataset = datasets.MNIST(DATA_DIR, train=False, download=False, transform=transform)
     return DataLoader(dataset, batch_size=64, shuffle=False)
 
 

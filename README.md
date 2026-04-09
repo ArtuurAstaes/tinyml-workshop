@@ -5,7 +5,7 @@
 ![License](https://img.shields.io/badge/License-Apache%202.0-green)
 
 A hands-on introduction to neural network optimization for embedded and
-resource-constrained devices, using a simple CNN trained on MNIST.
+resource-constrained devices, using a CNN trained on MNIST.
 
 Topics covered: full-precision training, post-training quantization (PTQ),
 quantization-aware training (QAT), magnitude-based pruning, and ONNX export.
@@ -110,7 +110,7 @@ Key takeaways:
 
 ## Inspecting the ONNX model
 
-After running `export_onnx.py`, open `simple_cnn.onnx` in **Netron**:
+After running `export_onnx.py`, open `cnn.onnx` in **Netron**:
 https://netron.app
 
 Drag and drop the file into the browser to visualize the full computation graph,
