@@ -1,7 +1,7 @@
 """
 train.py — Full-precision training on MNIST.
 
-Trains CNN and saves weights to models/cnn.pth.
+Trains CNN and saves weights to cnn.pth.
 This is the baseline model that all other scripts (PTQ, QAT, pruning) build on.
 
 Usage:
@@ -14,8 +14,6 @@ import torch.optim as optim
 from torchvision import datasets, transforms
 from torch.utils.data import DataLoader
 from pathlib import Path
-import warnings
-warnings.filterwarnings("ignore")
 
 from model import CNN
 
@@ -26,7 +24,7 @@ from model import CNN
 BATCH_SIZE = 64
 EPOCHS = 5
 LEARNING_RATE = 1e-3
-SAVE_PATH = Path("models/cnn.pth")
+SAVE_PATH = Path("./models/cnn.pth")
 DATA_DIR  = Path("./data")
 
 
@@ -104,7 +102,8 @@ def main():
               f"Train loss: {train_loss:.4f}, acc: {100 * train_acc:.2f}% | "
               f"Test loss: {test_loss:.4f}, acc: {100 * test_acc:.2f}%")
 
-    SAVE_PATH.parent.mkdir(exist_ok=True)  # Ensure 'models' directory exists
+    # Save the trained model's state dict
+    SAVE_PATH.parent.mkdir(parents=True, exist_ok=True) # Make sure save directory exists
     torch.save(model.state_dict(), SAVE_PATH)
     print(f"\nModel saved to '{SAVE_PATH}'")
 

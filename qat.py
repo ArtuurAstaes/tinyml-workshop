@@ -22,8 +22,11 @@ import torch.optim as optim
 from torchvision import datasets, transforms
 from torch.utils.data import DataLoader
 from pathlib import Path
+
+# Suppress warnings about quantization and deprecation in ONNX export
 import warnings
-warnings.filterwarnings("ignore")
+warnings.filterwarnings("ignore", category=DeprecationWarning)
+warnings.filterwarnings("ignore", category=UserWarning)
 
 from model import CNN
 
@@ -31,10 +34,10 @@ from model import CNN
 # ---------------------------------------------------------------------------
 # Config
 # ---------------------------------------------------------------------------
-LOAD_PATH = Path("models/cnn.pth")
-SAVE_PATH = Path("models/cnn_qat.pth")
+LOAD_PATH = Path("./models/cnn.pth")
+SAVE_PATH = Path("./models/cnn_qat.pth")
 DATA_DIR  = Path("./data")
-EPOCHS = 3          # Fine-tuning epochs — fewer needed since we start from a trained model
+EPOCHS    = 3  # Fine-tuning epochs — fewer needed since we start from a trained model
 LEARNING_RATE = 1e-4
 
 
@@ -129,6 +132,8 @@ def main():
     acc = evaluate(qat_model, test_loader)
     print(f"QAT model accuracy: {100 * acc:.2f}%")
 
+    # Save the quantized model's state dict
+    SAVE_PATH.parent.mkdir(parents=True, exist_ok=True) # Make sure save directory exists
     torch.save(qat_model.state_dict(), SAVE_PATH)
     print(f"Saved QAT model to '{SAVE_PATH}'")
 

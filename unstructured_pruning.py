@@ -25,8 +25,6 @@ import torch.nn.utils.prune as prune
 from torchvision import datasets, transforms
 from torch.utils.data import DataLoader
 from pathlib import Path
-import warnings
-warnings.filterwarnings("ignore")
 
 from model import CNN
 
@@ -34,8 +32,8 @@ from model import CNN
 # ---------------------------------------------------------------------------
 # Config
 # ---------------------------------------------------------------------------
-LOAD_PATH = Path("models/cnn.pth")
-SAVE_PATH = Path("models/cnn_pruned.pth")
+LOAD_PATH = Path("./models/cnn.pth")
+SAVE_PATH = Path("./models/cnn_unstructured_pruned.pth")
 DATA_DIR  = Path("./data")
 PRUNING_AMOUNT = 0.5   # Fraction of weights to prune (50%)
 FINETUNE_EPOCHS = 3
@@ -145,6 +143,8 @@ def main():
     make_permanent(model)
     print(f"\nPruning made permanent. Final sparsity: {count_sparsity(model):.2%}")
 
+    # Save the pruned model's state dict
+    SAVE_PATH.parent.mkdir(parents=True, exist_ok=True) # Make sure save directory exists
     torch.save(model.state_dict(), SAVE_PATH)
     print(f"Saved pruned model to '{SAVE_PATH}'")
 

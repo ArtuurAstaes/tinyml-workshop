@@ -19,8 +19,11 @@ import torch.nn as nn
 from torchvision import datasets, transforms
 from torch.utils.data import DataLoader
 from pathlib import Path
+
+# Suppress warnings about quantization and deprecation in ONNX export
 import warnings
-warnings.filterwarnings("ignore")
+warnings.filterwarnings("ignore", category=DeprecationWarning)
+warnings.filterwarnings("ignore", category=UserWarning)
 
 from model import CNN
 
@@ -28,8 +31,8 @@ from model import CNN
 # ---------------------------------------------------------------------------
 # Config
 # ---------------------------------------------------------------------------
-LOAD_PATH = Path("models/cnn.pth")
-SAVE_PATH = Path("models/cnn_ptq.pth")
+LOAD_PATH = Path("./models/cnn.pth")
+SAVE_PATH = Path("./models/cnn_ptq.pth")
 DATA_DIR  = Path("./data")
 CALIBRATION_BATCHES = 10  # How many batches to use for calibration
 
@@ -115,15 +118,17 @@ def main():
     acc = evaluate(quant_model, loader, device)
     print(f"PTQ model accuracy: {100 * acc:.2f}%")
 
-    # Report size reduction
+    # Save the quantized model's state dict
+    SAVE_PATH.parent.mkdir(parents=True, exist_ok=True) # Make sure save directory exists
     torch.save(quant_model.state_dict(), SAVE_PATH)
+    print(f"Saved PTQ model to '{SAVE_PATH}'")
 
+    # Report size reduction
     import os
     baseline_size = os.path.getsize(LOAD_PATH) / 1024
     quant_size = os.path.getsize(SAVE_PATH) / 1024
     print(f"\nBaseline model size: {baseline_size:.1f} KB")
-    print(f"PTQ model size:        {quant_size:.1f} KB")
-    print(f"Saved PTQ model to:    {SAVE_PATH}")
+    print(f"PTQ model size:      {quant_size:.1f} KB")
 
 
 if __name__ == "__main__":

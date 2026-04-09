@@ -3,7 +3,7 @@ structured_pruning.py — Structured (filter) pruning.
 
 Loads the trained full-precision model, ranks Conv2d filters by their L1 norm
 (sum of absolute weight values), removes the weakest ones, rebuilds a smaller
-PrunedSimpleCNN with the surviving weights copied in, and fine-tunes to recover
+PrunedCNN with the surviving weights copied in, and fine-tunes to recover
 accuracy.
 
 Key ideas for the workshop:
@@ -25,16 +25,17 @@ import torch.nn as nn
 import torch.optim as optim
 from torchvision import datasets, transforms
 from torch.utils.data import DataLoader
+from pathlib import Path
 
-from model import SimpleCNN, PrunedSimpleCNN
+from model import CNN, PrunedCNN
 
 
 # ---------------------------------------------------------------------------
 # Config
 # ---------------------------------------------------------------------------
-LOAD_PATH = "simple_cnn.pth"
-SAVE_PATH = "simple_cnn_structured_pruned.pth"
-DATA_DIR = "./data"
+LOAD_PATH = Path("./models/cnn.pth")
+SAVE_PATH = Path("./models/cnn_structured_pruned.pth")
+DATA_DIR  = Path("./data")
 N_FILTERS_TO_KEEP = 16   # Keep 16 of the 32 filters (50% reduction)
 FINETUNE_EPOCHS = 5
 LEARNING_RATE = 1e-4
@@ -103,12 +104,12 @@ def main():
     train_loader, test_loader = get_dataloaders()
 
     # Load baseline
-    baseline = SimpleCNN().to(device)
+    baseline = CNN().to(device)
     baseline.load_state_dict(torch.load(LOAD_PATH, map_location=device))
     baseline.eval()
 
     acc_before = evaluate(baseline, test_loader, device)
-    print(f"Baseline accuracy:         {acc_before:.4f}")
+    print(f"Baseline accuracy:         {100 * acc_before:.2f}%")
     print(f"Baseline conv filters:     {baseline.conv.out_channels}")
 
     # Select the N_FILTERS_TO_KEEP strongest filters by L1 norm
@@ -117,11 +118,11 @@ def main():
           f"({100 * N_FILTERS_TO_KEEP // baseline.conv.out_channels}% of original)")
 
     # Build smaller model and copy surviving weights into it
-    pruned = PrunedSimpleCNN(n_filters=N_FILTERS_TO_KEEP).to(device)
+    pruned = PrunedCNN(n_filters=N_FILTERS_TO_KEEP).to(device)
     copy_weights(baseline, pruned, filter_indices)
 
     acc_after_pruning = evaluate(pruned, test_loader, device)
-    print(f"Accuracy after pruning (before fine-tuning): {acc_after_pruning:.4f}")
+    print(f"Accuracy after pruning (before fine-tuning): {100 * acc_after_pruning:.2f}%")
 
     # Fine-tune to recover accuracy
     optimizer = optim.Adam(pruned.parameters(), lr=LEARNING_RATE)
@@ -145,11 +146,13 @@ def main():
 
         acc = correct / len(train_loader.dataset)
         print(f"  Epoch {epoch}/{FINETUNE_EPOCHS} | "
-              f"loss: {total_loss / len(train_loader.dataset):.4f}, acc: {acc:.4f}")
+              f"loss: {total_loss / len(train_loader.dataset):.4f}, acc: {100 * acc:.2f}%")
 
     acc_final = evaluate(pruned, test_loader, device)
-    print(f"\nFinal accuracy after fine-tuning: {acc_final:.4f}")
+    print(f"\nFinal accuracy after fine-tuning: {100 * acc_final:.2f}%")
 
+    # Save the pruned model's state dict
+    SAVE_PATH.parent.mkdir(parents=True, exist_ok=True) # Make sure save directory exists
     torch.save(pruned.state_dict(), SAVE_PATH)
     print(f"Saved structured pruned model to '{SAVE_PATH}'")
 

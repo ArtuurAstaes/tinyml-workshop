@@ -8,6 +8,10 @@ __pycache__/
 *.pyd
 .Python
 
+# Verification and test files
+run_all.py
+test.py
+
 # Generated model files
 *.pth
 *.onnx

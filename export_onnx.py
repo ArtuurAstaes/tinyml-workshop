@@ -23,8 +23,11 @@ import torch
 import onnx
 from onnx import shape_inference
 from pathlib import Path
+
+# Suppress warnings about quantization and deprecation in ONNX export
 import warnings
-warnings.filterwarnings("ignore")
+warnings.filterwarnings("ignore", category=DeprecationWarning)
+warnings.filterwarnings("ignore", category=UserWarning)
 
 from model import CNN
 
@@ -32,8 +35,8 @@ from model import CNN
 # ---------------------------------------------------------------------------
 # Config
 # ---------------------------------------------------------------------------
-LOAD_PATH = Path("models/cnn.pth")
-SAVE_PATH = Path("onnx/cnn.onnx")
+LOAD_PATH = Path("./models/cnn.pth")
+SAVE_PATH = Path("./onnx/cnn.onnx")
 OPSET_VERSION = 13
 
 
