@@ -79,13 +79,13 @@ venv\Scripts\activate
 Run the scripts in this order. Each one builds on the previous.
 
 ```
-python train.py        # Train the baseline model (~1 min)
-python ptq.py          # Quantize without retraining (seconds)
-python qat.py          # Quantize with fine-tuning (~1 min)
-python pruning.py            # Unstructured prune + fine-tune (~1 min)
-    python structured_pruning.py # Structured prune + fine-tune (~1 min)
-python export_onnx.py  # Export to ONNX
-python inference.py    # Compare all variants side by side
+python train.py                # Train the baseline model (~1 min)
+python ptq.py                  # Quantize without retraining (seconds)
+python qat.py                  # Quantize with fine-tuning (~1 min)
+python unstructured_pruning.py # Unstructured prune + fine-tune (~1 min)
+python structured_pruning.py   # Structured prune + fine-tune (~1 min)
+python export_onnx.py          # Export to ONNX
+python inference.py            # Compare all variants side by side
 ```
 
 The MNIST dataset (~11 MB) is downloaded automatically on first run.
