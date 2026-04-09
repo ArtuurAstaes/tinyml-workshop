@@ -47,8 +47,8 @@ def get_dataloaders():
         transforms.ToTensor(),
         transforms.Normalize((0.1307,), (0.3081,))
     ])
-    train_dataset = datasets.MNIST(DATA_DIR, train=True, download=True, transform=transform)
-    test_dataset = datasets.MNIST(DATA_DIR, train=False, download=True, transform=transform)
+    train_dataset = datasets.MNIST(DATA_DIR, train=True, download=False, transform=transform)
+    test_dataset = datasets.MNIST(DATA_DIR, train=False, download=False, transform=transform)
 
     return (DataLoader(train_dataset, batch_size=64, shuffle=True),
             DataLoader(test_dataset, batch_size=64, shuffle=False))
