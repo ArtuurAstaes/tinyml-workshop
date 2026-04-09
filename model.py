@@ -63,3 +63,25 @@ class PrunedCNN(nn.Module):
     def predict(self, x):
         """Returns class probabilities. Use this for human-readable inference output."""
         return torch.softmax(self.forward(x), dim=1)
+
+
+class QuantizedCNN(nn.Module):
+    """
+    A quantization wrapper around CNN.
+
+    PyTorch's quantization API requires QuantStub and DeQuantStub to mark the
+    boundaries where tensors move between float and quantized representations.
+    Used by both PTQ and QAT.
+    """
+
+    def __init__(self, model):
+        super().__init__()
+        self.quant = torch.quantization.QuantStub()
+        self.model = model
+        self.dequant = torch.quantization.DeQuantStub()
+
+    def forward(self, x):
+        x = self.quant(x)
+        x = self.model(x)
+        x = self.dequant(x)
+        return x

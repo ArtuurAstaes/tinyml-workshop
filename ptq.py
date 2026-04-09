@@ -25,7 +25,7 @@ import warnings
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 warnings.filterwarnings("ignore", category=UserWarning)
 
-from model import CNN
+from model import CNN, QuantizedCNN
 
 
 # ---------------------------------------------------------------------------
@@ -37,23 +37,6 @@ DATA_DIR  = Path("./data")
 CALIBRATION_BATCHES = 10  # How many batches to use for calibration
 
 
-# ---------------------------------------------------------------------------
-# Quantization wrapper
-# ---------------------------------------------------------------------------
-# PyTorch's quantization API requires QuantStub and DeQuantStub to mark the
-# boundaries where tensors move between float and quantized representations.
-class QuantizedCNN(nn.Module):
-    def __init__(self, model):
-        super().__init__()
-        self.quant = torch.quantization.QuantStub()
-        self.model = model
-        self.dequant = torch.quantization.DeQuantStub()
-
-    def forward(self, x):
-        x = self.quant(x)
-        x = self.model(x)
-        x = self.dequant(x)
-        return x
 
 
 def get_calibration_loader():

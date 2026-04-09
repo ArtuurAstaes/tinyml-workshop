@@ -23,7 +23,7 @@ import warnings
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 warnings.filterwarnings("ignore", category=UserWarning)
 
-from model import CNN, PrunedCNN
+from model import CNN, QuantizedCNN, PrunedCNN
 
 
 # ---------------------------------------------------------------------------
@@ -34,21 +34,6 @@ N_SAMPLES = 1000
 N_FILTERS_KEPT = 16   # Must match the value used in structured_pruning.py
 
 
-# ---------------------------------------------------------------------------
-# Quantization wrapper (must match the one used in ptq.py and qat.py)
-# ---------------------------------------------------------------------------
-class QuantizedCNN(nn.Module):
-    def __init__(self, model):
-        super().__init__()
-        self.quant = torch.quantization.QuantStub()
-        self.model = model
-        self.dequant = torch.quantization.DeQuantStub()
-
-    def forward(self, x):
-        x = self.quant(x)
-        x = self.model(x)
-        x = self.dequant(x)
-        return x
 
 
 def get_test_loader(n_samples):
