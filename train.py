@@ -93,14 +93,14 @@ def main():
     # returns exactly that, so this is correct.
     criterion = nn.CrossEntropyLoss()
 
-    print(f"\nTraining CNN for {EPOCHS} epochs...\n")
+    print(f"\nTraining CNN for {EPOCHS} epochs...")
     for epoch in range(1, EPOCHS + 1):
         train_loss, train_acc = train_one_epoch(model, train_loader, optimizer, criterion, device)
         test_loss, test_acc = evaluate(model, test_loader, criterion, device)
 
-        print(f"Epoch {epoch}/{EPOCHS} | "
-              f"Train loss: {train_loss:.4f}, acc: {100 * train_acc:.2f}% | "
-              f"Test loss: {test_loss:.4f}, acc: {100 * test_acc:.2f}%")
+        print(f"  Epoch {epoch}/{EPOCHS} | "
+              f"  train loss: {train_loss:.4f}, train acc: {100 * train_acc:.2f}% | "
+              f"  test loss: {test_loss:.4f}, test acc: {100 * test_acc:.2f}%")
 
     # Save the trained model's state dict
     SAVE_PATH.parent.mkdir(parents=True, exist_ok=True) # Make sure save directory exists
